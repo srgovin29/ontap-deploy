@@ -1,0 +1,7 @@
+[vmware_hosts]
+vmware_host1 ansible_host=192.168.1.10 ansible_user=root ansible_password=your_password
+vmware_host2 ansible_host=192.168.1.11 ansible_user=root ansible_password=your_password
+
+[ontap_nodes]
+ontap_node1 ansible_host=192.168.1.20 ansible_user=root ansible_password=your_password
+ontap_node2 ansible_host=192.168.1.21 ansible_user=root ansible_password=your_password

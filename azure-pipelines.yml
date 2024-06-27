@@ -1,0 +1,69 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  includeInstallSteps: false  # Set this to false to skip installation steps
+
+stages:
+- stage: PrepareAgent
+  jobs:
+  - job: PrepareAgentMachine
+    steps:
+    - ${{ if eq(variables.includeInstallSteps, 'true') }}:
+      - template: templates/install_dependencies.yml
+
+    - task: Bash@3
+      displayName: 'List contents of source directory'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ls -la $(Build.SourcesDirectory)
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: Bash@3
+      displayName: 'List contents of artifact staging directory'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ls -la $(Build.ArtifactStagingDirectory)
+
+- stage: PrepareVMwareEnvironment
+  jobs:
+  - job: PrepareVMware
+    steps:
+    - task: Bash@3
+      displayName: 'Prepare VMware Environment'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ansible-playbook -i inventory/hosts site.yml --tags prepare_vmware
+
+- stage: DeployONTAPSelect
+  jobs:
+  - job: DeployONTAPSelect
+    steps:
+    - task: Bash@3
+      displayName: 'Deploy ONTAP Select'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ansible-playbook -i inventory/hosts site.yml --tags deploy_ontap_select
+
+- stage: DeployCluster
+  jobs:
+  - job: DeployCluster
+    steps:
+    - task: Bash@3
+      displayName: 'Deploy ONTAP Cluster'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ansible-playbook -i inventory/hosts site.yml --tags deploy_cluster -e cluster_size=$(ClusterSize)

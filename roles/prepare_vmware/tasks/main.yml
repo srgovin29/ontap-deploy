@@ -1,0 +1,23 @@
+# roles/prepare_vmware/tasks/main.yml
+
+---
+- name: Create resource pool
+  vmware_resource_pool:
+    hostname: "{{ target_vcenter_or_esxi_host }}"
+    username: "{{ host_login }}"
+    password: "{{ vcenter_password }}"
+    datacenter: "{{ datacenter_name }}"
+    cluster: "{{ esx_cluster_name }}"
+    resource_pool: "ONTAP_Resource_Pool"
+    state: present
+  delegate_to: localhost
+
+- name: Create VM folder
+  vmware_folder:
+    hostname: "{{ target_vcenter_or_esxi_host }}"
+    username: "{{ host_login }}"
+    password: "{{ vcenter_password }}"
+    datacenter: "{{ datacenter_name }}"
+    folder: "ONTAP_VMs"
+    state: present
+  delegate_to: localhost
