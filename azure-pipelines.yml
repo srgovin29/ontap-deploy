@@ -44,7 +44,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          ansible-playbook -i inventory/hosts site.yml --tags prepare_vmware
+          ansible-playbook -i inventory/hosts main.yml --tags prepare_vmware
 
 - stage: DeployONTAPSelect
   jobs:
@@ -55,7 +55,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          ansible-playbook -i inventory/hosts site.yml --tags deploy_ontap_select
+          ansible-playbook -i inventory/hosts main.yml --tags deploy_ontap_select
 
 - stage: DeployCluster
   jobs:
@@ -66,4 +66,4 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          ansible-playbook -i inventory/hosts site.yml --tags deploy_cluster -e cluster_size=$(ClusterSize)
+          ansible-playbook -i inventory/hosts main.yml --tags deploy_cluster -e cluster_size=$(ClusterSize)
