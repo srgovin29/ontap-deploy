@@ -1,4 +1,10 @@
 ---
+- name: Install dependencies on RHEL 9
+  hosts: localhost
+  tasks:
+    - name: Install dependencies from external playbook
+      import_tasks: templates/install_dependencies.yml
+
 - name: Prepare VMware Environment
   hosts: localhost
   roles:

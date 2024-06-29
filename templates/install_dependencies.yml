@@ -3,9 +3,9 @@
   hosts: localhost
   become: yes
   tasks:
-    - name: Ensure Python 3.10.12 is installed
+    - name: Ensure Python 3.11 is installed
       yum:
-        name: python3.10
+        name: python3.11
         state: present
 
     - name: Configure pip to use internal repository
@@ -13,14 +13,14 @@
         dest: /etc/pip.conf
         content: |
           [global]
-          index-url = http://your-on-prem-repo/simple
-          trusted-host = your-on-prem-repo
+          index-url = "https://artifactory.global.standardchartered.com/artifactory/api/pypi/pypi/simple"
+          trusted-host = artifactory.global.standardchartered.com
 
     - name: Upgrade pip to the latest version
       pip:
         name: pip
         state: latest
-        executable: pip3.10
+        executable: pip3
 
     - name: Install system dependencies
       yum:
@@ -41,13 +41,34 @@
           - requests[security]
           - xmltodict
           - msgraph-sdk==1.0.0
-        executable: pip3.10
+          - pyvmomi
+        executable: pip3
+        extra_args: --index-url=https://artifactory.global.standardchartered.com/artifactory/api/pypi/pypi/simple --trusted-host artifactory.global.standardchartered.com
+      ignore_errors: yes
 
     - name: Install Ansible
       pip:
         name: ansible==8.7.0
-        executable: pip3.10
+        executable: pip3
+        extra_args: --index-url=https://artifactory.global.standardchartered.com/artifactory/api/pypi/pypi/simple --trusted-host artifactory.global.standardchartered.com
+      ignore_errors: yes
 
-    - name: Install ONTAP Ansible Collection from Tar
+    - name: Create directory for NetApp collection
+      file:
+        path: /tmp/netapp-ontap-22.11.0
+        state: directory
+
+    - name: Extract and install Ansible NetApp Collection
+      unarchive:
+        src: files/netapp-ontap-22.11.0.tar.gz
+        dest: /tmp/netapp-ontap-22.11.0
+      ignore_errors: yes
+
+    - name: Install Ansible NetApp Collection
+      command: ansible-galaxy collection install /tmp/netapp-ontap-22.11.0
+      ignore_errors: yes
+
+    - name: Install community.vmware collection
       ansible.builtin.command:
-        cmd: ansible-galaxy collection install /files/ontap-collection.tar.gz --offline
+        cmd: ansible-galaxy collection install community.vmware
+      ignore_errors: yes

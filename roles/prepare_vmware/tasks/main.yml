@@ -1,8 +1,13 @@
 # roles/prepare_vmware/tasks/main.yml
-
 ---
+- name: Install pyvmomi
+  pip:
+    name: pyvmomi
+    executable: pip3
+  become: yes
+
 - name: Create resource pool
-  vmware_resource_pool:
+  community.vmware.vmware_resource_pool:
     hostname: "{{ target_vcenter_or_esxi_host }}"
     username: "{{ host_login }}"
     password: "{{ vcenter_password }}"
@@ -13,11 +18,11 @@
   delegate_to: localhost
 
 - name: Create VM folder
-  vmware_folder:
+  community.vmware.vcenter_folder:
     hostname: "{{ target_vcenter_or_esxi_host }}"
     username: "{{ host_login }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ datacenter_name }}"
-    folder: "ONTAP_VMs"
+    folder: "storage/VMs/ONTAP_VMs"
     state: present
   delegate_to: localhost
