@@ -1,0 +1,27 @@
+# templates/install_dependencies.yml
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.10.12'
+    addToPath: true
+
+- script: |
+    sudo dnf update -y
+    sudo dnf -y install cmake make gcc gcc-c++ openssl-devel python3-devel python3-pip
+    python3 -m pip install --upgrade pip
+    pip3 --version
+  displayName: 'Install system dependencies and pip'
+
+- script: |
+    pip3 install pyyaml packaging pyvmomi
+  displayName: 'Install pip, PyYAML, pyvmomi and packaging'
+
+- script: |
+    pip3 install ansible==8.7.0
+    pip3 install packaging requests[security] xmltodict msgraph-sdk==1.0.0
+  displayName: 'Install Ansible and required packages'
+
+- script: |
+    pip3 install --index-url <YOUR_ON_PREM_REPO_URL> --trusted-host <YOUR_ON_PREM_REPO_HOST> na_ontap_cluster
+  displayName: 'Install na_ontap_cluster from on-prem repository'

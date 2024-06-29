@@ -1,27 +1,53 @@
-# templates/install_dependencies.yml
+---
+- name: Install dependencies on RHEL 9
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Ensure Python 3.10.12 is installed
+      yum:
+        name: python3.10
+        state: present
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.10.12'
-    addToPath: true
+    - name: Configure pip to use internal repository
+      copy:
+        dest: /etc/pip.conf
+        content: |
+          [global]
+          index-url = http://your-on-prem-repo/simple
+          trusted-host = your-on-prem-repo
 
-- script: |
-    sudo dnf update -y
-    sudo dnf -y install cmake make gcc gcc-c++ openssl-devel python3-devel python3-pip
-    python3 -m pip install --upgrade pip
-    pip3 --version
-  displayName: 'Install system dependencies and pip'
+    - name: Upgrade pip to the latest version
+      pip:
+        name: pip
+        state: latest
+        executable: pip3.10
 
-- script: |
-    pip3 install pyyaml packaging
-  displayName: 'Install pip, PyYAML, and packaging'
+    - name: Install system dependencies
+      yum:
+        name:
+          - cmake
+          - make
+          - gcc
+          - gcc-c++
+          - openssl-devel
+          - python3-devel
+        state: present
 
-- script: |
-    pip3 install ansible==8.7.0
-    pip3 install packaging requests[security] xmltodict msgraph-sdk==1.0.0
-  displayName: 'Install Ansible and required packages'
+    - name: Install Python packages
+      pip:
+        name:
+          - pyyaml
+          - packaging
+          - requests[security]
+          - xmltodict
+          - msgraph-sdk==1.0.0
+        executable: pip3.10
 
-- script: |
-    pip3 install --index-url <YOUR_ON_PREM_REPO_URL> --trusted-host <YOUR_ON_PREM_REPO_HOST> na_ontap_cluster
-  displayName: 'Install na_ontap_cluster from on-prem repository'
+    - name: Install Ansible
+      pip:
+        name: ansible==8.7.0
+        executable: pip3.10
+
+    - name: Install ONTAP Ansible Collection from Tar
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install /files/ontap-collection.tar.gz --offline

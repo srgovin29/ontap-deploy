@@ -5,8 +5,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  includeInstallSteps: true
-  cluster_size: '1'  # Default cluster size
+  includeInstallSteps: false  # Set this to false to skip installation steps
 
 stages:
 - stage: PrepareAgent
@@ -36,15 +35,35 @@ stages:
         script: |
           ls -la $(Build.ArtifactStagingDirectory)
 
-- stage: DeployONTAPSelect
-  dependsOn: PrepareAgent
+- stage: PrepareVMwareEnvironment
   jobs:
-  - job: DeployONTAPSelectJob
+  - job: PrepareVMware
     steps:
     - task: Bash@3
-      displayName: 'Run Ansible Playbook'
+      displayName: 'Prepare VMware Environment'
       inputs:
         targetType: 'inline'
         script: |
-          cd $(Build.ArtifactStagingDirectory)
-          ansible-playbook -i /tmp/hosts main.yml -e "cluster_size=${{ variables.cluster_size }}"
+          ansible-playbook -i inventory/hosts main.yml --tags prepare_vmware
+
+- stage: DeployONTAPSelect
+  jobs:
+  - job: DeployONTAPSelect
+    steps:
+    - task: Bash@3
+      displayName: 'Deploy ONTAP Select'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ansible-playbook -i inventory/hosts main.yml --tags deploy_ontap_select
+
+- stage: DeployCluster
+  jobs:
+  - job: DeployCluster
+    steps:
+    - task: Bash@3
+      displayName: 'Deploy ONTAP Cluster'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ansible-playbook -i inventory/hosts main.yml --tags deploy_cluster -e cluster_size=$(ClusterSize)

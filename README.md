@@ -12,9 +12,10 @@ This Ansible playbook automates the deployment of NetApp ONTAP Select on a VMwar
 - `ansible.cfg`: Ansible configuration file.
 - `inventory/hosts`: Inventory file containing VMware and ONTAP nodes.
 - `group_vars/all.yml`: Group variables for VMware and ONTAP Select configuration.
-- `playbook.yml`: Main playbook to execute the roles.
-- `roles/prepare_vmware_environment`: Role to prepare the VMware environment.
-- `roles/deploy_ontap_select`: Role to deploy and configure ONTAP Select.
+- `main.yml`: Main playbook to execute the roles.
+- `roles/prepare_vmware`: Role to prepare the VMware environment.
+- `roles/na_ots_deploy`: Role to deploy and configure ONTAP Select Deploy.
+- `roles/na_ots_cluster`: Role to deploy and configure ONTAP Select cluster
 
 ## Usage
 
@@ -24,3 +25,6 @@ This Ansible playbook automates the deployment of NetApp ONTAP Select on a VMwar
 
 ```bash
 ansible-playbook main.yml
+
+
+ansible-playbook ots_setup.yaml --extra-vars deploy_pwd=$'"P@ssw0rd"' --extra-vars vcenter_password=$'"P@ssw0rd"' --extra-vars ontap_pwd=$'"P@ssw0rd"' --extra-vars host_esx_password=$'"P@ssw0rd"' --extra-vars host_password=$'"P@ssw0rd"' --extra-vars deploy_password=$'"P@ssw0rd"'
