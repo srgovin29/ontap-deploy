@@ -26,7 +26,7 @@ deploy_searchDomains: ""
 # Passwords 
 # - Place these in a separate file and implement encryption if needed
 # -------------------------------------------------------------------
-deploy_pwd: ""
+deploy_password: ""
 vcenter_password: ""
 ontap_pwd: ""
 host_esx_password: ""

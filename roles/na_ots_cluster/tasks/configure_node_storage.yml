@@ -91,3 +91,7 @@
     - check_storage_response.json.num_records == 0
 
   register: configure_node_storage_response
+
+- name: Debug output of configure_node_storage_response
+  debug:
+    var: configure_node_storage_response

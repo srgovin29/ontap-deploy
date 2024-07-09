@@ -1,11 +1,5 @@
 # roles/prepare_vmware/tasks/main.yml
 ---
-- name: Install pyvmomi
-  pip:
-    name: pyvmomi
-    executable: pip3
-  become: yes
-
 - name: Create resource pool
   community.vmware.vmware_resource_pool:
     hostname: "{{ target_vcenter_or_esxi_host }}"
@@ -15,14 +9,43 @@
     cluster: "{{ esx_cluster_name }}"
     resource_pool: "ONTAP_Resource_Pool"
     state: present
+    validate_certs: no
   delegate_to: localhost
 
-- name: Create VM folder
+- name: Create main folder
   community.vmware.vcenter_folder:
     hostname: "{{ target_vcenter_or_esxi_host }}"
     username: "{{ host_login }}"
     password: "{{ vcenter_password }}"
     datacenter: "{{ datacenter_name }}"
-    folder: "storage/VMs/ONTAP_VMs"
+    folder_name: "Storage_Engg"
     state: present
+    folder_type: vm
+    validate_certs: no
+  delegate_to: localhost
+
+- name: Create subfolder
+  community.vmware.vcenter_folder:
+    hostname: "{{ target_vcenter_or_esxi_host }}"
+    username: "{{ host_login }}"
+    password: "{{ vcenter_password }}"
+    datacenter: "{{ datacenter_name }}"
+    folder_name: "Automation_Srini"
+    parent_folder: "Storage_Engg"
+    state: present
+    folder_type: vm
+    validate_certs: no
+  delegate_to: localhost
+
+- name: Create ONTAP_VMs folder
+  community.vmware.vcenter_folder:
+    hostname: "{{ target_vcenter_or_esxi_host }}"
+    username: "{{ host_login }}"
+    password: "{{ vcenter_password }}"
+    datacenter: "{{ datacenter_name }}"
+    folder_name: "ONTAP_VMs"
+    parent_folder: "Storage_Engg/Automation_Srini"
+    state: present
+    folder_type: vm
+    validate_certs: no
   delegate_to: localhost

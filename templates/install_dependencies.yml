@@ -1,74 +1,78 @@
----
-- name: Install dependencies on RHEL 9
-  hosts: localhost
+- name: Ensure Python 3.11 is installed
   become: yes
-  tasks:
-    - name: Ensure Python 3.11 is installed
-      yum:
-        name: python3.11
-        state: present
+  yum:
+    name: python3.11
+    state: present
 
-    - name: Configure pip to use internal repository
-      copy:
-        dest: /etc/pip.conf
-        content: |
-          [global]
-          index-url = "https://artifactory.global.standardchartered.com/artifactory/api/pypi/pypi/simple"
-          trusted-host = artifactory.global.standardchartered.com
+- name: Configure pip to use internal repository
+  become: yes
+  copy:
+    dest: /etc/pip.conf
+    content: |
+      [global]
+      index-url = https://artifactory.global.standardchartered.com/artifactory/api/pypi/pypi/simple
+      trusted-host = artifactory.global.standardchartered.com
 
-    - name: Upgrade pip to the latest version
-      pip:
-        name: pip
-        state: latest
-        executable: pip3
+- name: Upgrade pip to the latest version
+  pip:
+    name: pip
+    state: latest
+    executable: pip3
 
-    - name: Install system dependencies
-      yum:
-        name:
-          - cmake
-          - make
-          - gcc
-          - gcc-c++
-          - openssl-devel
-          - python3-devel
-        state: present
+- name: Install system dependencies
+  become: yes
+  yum:
+    name:
+      - cmake
+      - make
+      - gcc
+      - gcc-c++
+      - openssl-devel
+      - python3-devel
+    state: present
 
-    - name: Install Python packages
-      pip:
-        name:
-          - pyyaml
-          - packaging
-          - requests[security]
-          - xmltodict
-          - msgraph-sdk==1.0.0
-          - pyvmomi
-        executable: pip3
-        extra_args: --index-url=https://artifactory.global.standardchartered.com/artifactory/api/pypi/pypi/simple --trusted-host artifactory.global.standardchartered.com
-      ignore_errors: yes
+- name: Install Python packages
+  pip:
+    name:
+      - pyyaml
+      - packaging
+      - requests[security]
+      - xmltodict
+      - msgraph-sdk==1.0.0
+    executable: pip3
+    extra_args: --index-url=https://artifactory.global.standardchartered.com/artifactory/api/pypi/pypi/simple --trusted-host artifactory.global.standardchartered.com
+  ignore_errors: yes
 
-    - name: Install Ansible
-      pip:
-        name: ansible==8.7.0
-        executable: pip3
-        extra_args: --index-url=https://artifactory.global.standardchartered.com/artifactory/api/pypi/pypi/simple --trusted-host artifactory.global.standardchartered.com
-      ignore_errors: yes
+- name: Install Ansible
+  pip:
+    name: ansible==8.7.0
+    executable: pip3
+    extra_args: --index-url=https://artifactory.global.standardchartered.com/artifactory/api/pypi/pypi/simple --trusted-host artifactory.global.standardchartered.com
+  ignore_errors: yes
 
-    - name: Create directory for NetApp collection
-      file:
-        path: /tmp/netapp-ontap-22.11.0
-        state: directory
+- name: Create directory for NetApp collection
+  file:
+    path: /tmp/netapp-ontap-22.11.0
+    state: directory
 
-    - name: Extract and install Ansible NetApp Collection
-      unarchive:
-        src: files/netapp-ontap-22.11.0.tar.gz
-        dest: /tmp/netapp-ontap-22.11.0
-      ignore_errors: yes
+- name: Extract and install Ansible NetApp Collection
+  unarchive:
+    src: files/netapp-ontap-22.11.0.tar.gz
+    dest: /tmp/netapp-ontap-22.11.0
+  ignore_errors: yes
 
-    - name: Install Ansible NetApp Collection
-      command: ansible-galaxy collection install /tmp/netapp-ontap-22.11.0
-      ignore_errors: yes
+- name: Install Ansible NetApp Collection
+  command: ansible-galaxy collection install /tmp/netapp-ontap-22.11.0
+  ignore_errors: yes
 
-    - name: Install community.vmware collection
-      ansible.builtin.command:
-        cmd: ansible-galaxy collection install community.vmware
-      ignore_errors: yes
+- name: Install community.vmware collection
+  ansible.builtin.command:
+    cmd: ansible-galaxy collection install community.vmware
+  ignore_errors: yes
+
+- name: Install pyvmomi
+  pip:
+    name: pyvmomi
+    executable: pip3
+    extra_args: --index-url=https://artifactory.global.standardchartered.com/artifactory/api/pypi/pypi/simple --trusted-host artifactory.global.standardchartered.com
+  ignore_errors: yes
