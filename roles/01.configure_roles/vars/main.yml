@@ -15,3 +15,20 @@ ntap_roles:
     command_directory_name: "readonly"
     access_level: "read"
     vserver: "none"
+
+web_access:
+  - vserver: "vserver1"
+    role: "BackupAdmin"
+    access:
+      - "https"
+      - "http"
+  - vserver: "vserver1"
+    role: "StorageAdmin"
+    access:
+      - "https"
+      - "http"
+  - vserver: "vserver2"
+    role: "NetworkAdmin"
+    access:
+      - "https"
+      - "http"
