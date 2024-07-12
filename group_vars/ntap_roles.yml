@@ -1,0 +1,17 @@
+ntap_roles:
+  - name: "BackupAdmin"
+    command_directory_name: "backup"
+    access_level: "all"
+    vserver: "vserver1"
+  - name: "StorageAdmin"
+    command_directory_name: "storage"
+    access_level: "all"
+    vserver: "vserver1"
+  - name: "NetworkAdmin"
+    command_directory_name: "network"
+    access_level: "all"
+    vserver: "vserver2"
+  - name: "ReadOnly"
+    command_directory_name: "readonly"
+    access_level: "read"
+    vserver: "none"  # This will be skipped due to the 'when' condition

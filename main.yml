@@ -22,3 +22,9 @@
   roles:
     - na_ots_cluster
   tags: ONTAP Cluster
+
+- name: Configure Custom Roles
+  hosts: localhost
+  roles:
+    - configure_roles
+  tags: configure_roles

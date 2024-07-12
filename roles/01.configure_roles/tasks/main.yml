@@ -1,0 +1,11 @@
+---
+- name: Configure roles
+  na_ontap_user_role:
+    state: present
+    name: "{{ item.name }}"
+    command_directory_name: "{{ item.command_directory_name }}"
+    access_level: "{{ item.access_level }}"
+    vserver: "{{ item.vserver }}"
+    <<: *login
+  when: item.vserver != "none"
+  with_items: "{{ ntap_roles }}"
