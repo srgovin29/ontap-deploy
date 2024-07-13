@@ -1,39 +1,36 @@
----
 - name: Configure roles and web access
-  hosts: localhost
-  connection: local
-  gather_facts: no
-  tasks:
-    - name: Configure roles
-      na_ontap_user_role:
-        state: present
-        name: "{{ item.name }}"
-        command_directory_name: "{{ item.command_directory_name }}"
-        access_level: "{{ item.access_level }}"
-        vserver: "{{ item.vserver }}"
-        username: "{{ username }}"
-        password: "{{ password }}"
-      when: item.vserver != "none"
-      with_items: "{{ ntap_roles }}"
-    
-    - name: Configure web access for roles
-      uri:
-        url: "{{ deploy_login }}/api/cli/vserver/services/web/access"
-        username: "{{ username }}"
-        password: "{{ password }}"
-        validate_certs: false
-        method: POST
-        headers:
-          Content-Type: application/json
-          Accept: application/hal_json
-        body_format: json
-        body:
-          vserver: '{{ item.0.vserver }}'
-          role: '{{ item.0.name }}'
-          name: '{{ item.1 }}'
-        status_code: 201, 409
-        # 409 duplicate_entry
-      when: item[0].vserver != "none"
-      with_subelements: 
-        - "{{ web_access }}"
-        - access
+  na_ontap_user_role:
+    state: present
+    name: "{{ item.name }}"
+    command_directory_name: "{{ item.command_directory_name }}"
+    access_level: "{{ item.access_level }}"
+    vserver: "{{ item.vserver }}"
+    hostname: "{{ login.hostname }}"
+    username: "{{ login.username }}"
+    password: "{{ ontap_pwd }}"
+    https: "{{ login.https }}"
+    validate_certs: "{{ login.validate_certs }}"
+  when: item.vserver != "none"
+  with_items: "{{ ntap_roles }}"
+
+- name: Configure web access for roles
+  uri:
+    url: "https://{{ cluster_ip }}/api/private/cli/vserver/services/web/access"
+    user: "{{ deploy_login }}"
+    password: "{{ ontap_pwd }}"
+    validate_certs: false
+    method: POST
+    headers:
+      Content-Type: application/json
+      Accept: application/hal+json
+    body_format: json
+    body:
+      vserver: '{{ item.0.vserver }}'
+      role: '{{ item.0.role }}'
+      name: '{{ item.1 }}'
+    status_code: 201, 409
+    # 409 duplicate_entry
+  when: item[0].vserver != "none"
+  with_subelements: 
+    - "{{ web_access }}"
+    - access

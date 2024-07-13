@@ -2,32 +2,38 @@ ntap_roles:
   - name: "BackupAdmin"
     command_directory_name: "backup"
     access_level: "all"
-    vserver: "vserver1"
+    vserver: "uknase24a"
   - name: "StorageAdmin"
     command_directory_name: "storage"
     access_level: "all"
-    vserver: "vserver1"
+    vserver: "uknase24a"
   - name: "NetworkAdmin"
     command_directory_name: "network"
     access_level: "all"
-    vserver: "vserver2"
+    vserver: "uknase24a"
   - name: "ReadOnly"
-    command_directory_name: "readonly"
-    access_level: "read"
-    vserver: "none"
+    command_directory_name: "network"
+    access_level: "readonly"
+    vserver: "uknase24a"
+
+login: &login
+  hostname: '{{ cluster_ip }}'
+  username: '{{ deploy_login }}'
+  https: true
+  validate_certs: false
 
 web_access:
-  - vserver: "vserver1"
+  - vserver: "uknase24a"
     role: "BackupAdmin"
     access:
-      - "https"
+      - "portal"
       - "http"
-  - vserver: "vserver1"
+  - vserver: "uknase24a"
     role: "StorageAdmin"
     access:
       - "https"
       - "http"
-  - vserver: "vserver2"
+  - vserver: "uknase24a"
     role: "NetworkAdmin"
     access:
       - "https"

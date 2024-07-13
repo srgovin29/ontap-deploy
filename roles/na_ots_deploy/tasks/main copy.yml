@@ -1,0 +1,123 @@
+# # tasks file for ots_deploy
+
+- name: Find OVA in Content Library
+  community.vmware.vmware_content_deploy_template:
+    hostname: "{{ target_vcenter_or_esxi_host }}"
+    username: "{{ host_login }}"
+    password: "{{ host_password }}"
+    validate_certs: no
+    datacenter: "{{ datacenter_name }}"
+    cluster: "{{ esx_cluster_name }}"
+    datastore: "{{ datastore_name }}"
+    network: "{{ mgt_network }}"
+    name: "{{ deploy_name }}"
+    content_library: "Storage_Engg_Templates"
+    template: "{{ ovf_template_name }}"
+    power_on: yes
+    wait_for_ip_address: true
+    folder: "Storage_Engg/Automation_Srini/ONTAP_VMs"
+    customization:
+      hostname: "{{ deploy_name }}"
+      domain: "{{ deploy_searchDomains }}"
+      dns_servers: "{{ deploy_primaryDNS }},{{ deploy_secondaryDNS }}"
+      gateway: "{{ deploy_gateway }}"
+      netmask: "{{ deploy_netMask }}"
+      ip: "{{ deploy_ipAddress }}"
+      password: "{{ deploy_password }}"
+      custom_values:
+        - key: product_company
+          value: "{{ deploy_product_company }}"
+        - key: proxy_url
+          value: "{{ deploy_proxy_url }}"
+  delegate_to: localhost
+
+- name: wait for connectivity
+  wait_for_connection:
+    delay: 60
+    timeout: 300
+
+######## Working one start
+# tasks file for OTS deploy
+- name: Import Deploy OVA - {{ ovf_path }}
+  community.vmware.vmware_deploy_ovf:
+    hostname: '{{ vcenter_hostname }}'
+    username: '{{ vcenter_username }}'
+    password: '{{ vcenter_password }}'
+    validate_certs: no
+    datacenter: "{{ datacenter_name }}"
+    cluster: "{{ esx_cluster_name }}"
+    datastore: "{{ datastore_name }}"
+    network: "{{ mgt_network }}"
+    name: "{{ deploy_name }}"
+    folder: '{{ deploy_vm_folder }}'
+    ovf: '{{ ovf_path }}'
+    networks:
+      "ONTAP Select Deploy VM Network": "{{ mgt_network }}"
+    properties:
+      gateway: '{{ deploy_gateway }}'
+      proxy_url: '{{ deploy_proxy_url }}'
+      netMask: '{{ deploy_netMask }}'
+      password: '{{ deploy_pwd }}'
+      product_company: '{{ deploy_product_company }}'
+      ipAddress: '{{ deploy_ipAddress }}'
+      primaryDNS: '{{ deploy_primaryDNS }}'
+      secondaryDNS: '{{ deploy_secondaryDNS }}'
+      hostname: '{{ deploy_name }}'
+      searchDomains: '{{ deploy_searchDomains }}'
+    power_on: yes
+    wait_for_ip_address: false
+    allow_duplicates: no
+  delegate_to: localhost
+
+- name: wait for connectivity
+  wait_for_connection:
+    delay: 60
+    timeout: 300  
+
+# Above is working one confirmed.
+
+- name: Deploy OVF template
+  community.vmware.vmware_content_deploy_ovf_template:
+    hostname: '{{ vcenter_hostname }}'
+    username: '{{ vcenter_username }}'
+    password: '{{ vcenter_password }}'
+    validate_certs: no
+    datacenter: "{{ datacenter_name }}"
+    cluster: "{{ esx_cluster_name }}"
+    datastore: "{{ datastore_name }}"
+    network: "{{ mgt_network }}"
+    name: "{{ deploy_name }}"
+    folder: '{{ deploy_vm_folder }}'
+    content_library: "Storage_Engg_Templates"
+    ovf_template: "ONTAPSELECT_9141P2"
+  delegate_to: localhost
+  register: deploy_result
+  ignore_errors: yes
+
+- name: Customize the deployed VM
+  community.vmware.vmware_guest:
+    hostname: '{{ vcenter_hostname }}'
+    username: '{{ vcenter_username }}'
+    password: '{{ vcenter_password }}'
+    validate_certs: no
+    datacenter: "{{ datacenter_name }}"
+    cluster: "{{ esx_cluster_name }}"
+    datastore: "{{ datastore_name }}"
+    network: "{{ mgt_network }}"
+    name: "{{ deploy_name }}"
+    networks:
+      - name: '{{ mgt_network }}'
+      ip: '{{ deploy_ipAddress }}'
+      netmask: '{{ deploy_netMask }}'
+      gateway: '{{ deploy_gateway }}'
+      connected: true
+      dns_servers:
+        - '{{ deploy_primaryDNS }}'
+        - '{{ deploy_secondaryDNS }}'
+    customization:
+      password: '{{ deploy_password }}'
+      domain: '{{ deploy_searchDomains }}'
+      dns_suffix: '{{ deploy_searchDomains }}'
+    wait_for_connection: true
+  delegate_to: localhost
+  register: customize_result

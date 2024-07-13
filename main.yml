@@ -1,30 +1,43 @@
 ---
-- name: Install dependencies on RHEL 9
+- name: Install dependencies on RHEL9
   hosts: localhost
   become: yes
   tasks:
-    - import_tasks: templates/install_dependencies.yml
+    - name: install dependencies from templates
+      import_tasks: templates/install_dependencies.yml
 
 - name: Prepare VMware Environment
   hosts: localhost
   roles:
     - prepare_vmware
   tags: prepare_vmware
+  var_files:
+    - group_vars/vault.yml
 
 - name: Deploy ONTAP Select
   hosts: localhost
+  var_files:
+    - group_vars/ots_deploy.yml
+    - group_vars/vault.yml
   roles:
     - na_ots_deploy
   tags: ONTAP Deploy
 
-- name: Deploy Cluster
+- name: Deploy ONTAP Select Cluster
   hosts: localhost
+  var_files:
+    - group_vars/ots_cluster.yml
+    - group_vars/vault.yml
   roles:
     - na_ots_cluster
   tags: ONTAP Cluster
 
-- name: Configure Custom Roles
+- name: Configure Custom Roles and web access
   hosts: localhost
+  connection: local
+  var_files:
+    - group_vars/vault.yml
+    - group_vars/ots_cluster.yml
   roles:
-    - configure_roles
+    - 01.configure_roles
   tags: configure_roles

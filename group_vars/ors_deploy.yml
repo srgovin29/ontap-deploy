@@ -1,1 +1,30 @@
-target_vcenter or esxi_host: ""
+---
+############################################################################
+# defaults file for ots_deploy
+#####  Define these here or provide vars_files in your playbook #####
+############################################################################
+target_vcenter_or_esxi_host: "ukxvetvct02a.uk.dev.net"
+host_login: "1654426@vsphere.local"
+ovf_path: "/home/emerg1/ontap_image/ONTAPSELECT_9141P2_NODAR.ova"
+datacenter_name: "ARK-Prod-LAB"
+esx_cluster_name: "ARK-Prod-LAB01"
+datastore_name: "ukark-prod-lab01-emc-thn-t2-1-001"
+mgt_network: "VLAN-974"
+deploy_name: "ukxvitdep02a"
+deploy_ipAddress: "10.198.66.199"
+deploy_gateway: "10.198.66.129"
+deploy_proxy_url: ""
+deploy_netMask: "255.255.255.128"
+deploy_product_company: "SCB"
+deploy_primaryDNS: "10.4.32.5"
+deploy_secondaryDNS: "10.4.32.5"
+deploy_searchDomains: "uk.dev.net"
+deploy_vm_folder: "/ARK_Prod-Lab/Storage_Engg/Automation"
+ovf_template_name: "ONTAPSELECT_9141P2"
+ovf_template: "ONTAPSELECT_9141P2"
+
+# Repo Details
+artifact-url: "https://artifactory.global......com/artifactory/api/pypi/pypi/simple"
+trusted-host: "artifactory.global......com"
+
+deploy_user: "admin"
