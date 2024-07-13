@@ -1,0 +1,15 @@
+- name: Configure roles and web access
+  na_ontap_user:
+    state: present
+    hostname: "{{ login.hostname }}"
+    username: "{{ login.username }}"
+    password: "{{ ontap_pwd }}"
+    https: "{{ login.https }}"
+    validate_certs: "{{ login.validate_certs }}"
+    name: "{{ item.username }}"
+    vserver: "{{ item.vserver }}"
+    applications: '{{ item.applications | regex_replace("\s*,\s*,",",") }}'
+    authentication_method: password
+    set_password: '{{ user_password }}'
+  when: item.vserver != "none"
+  with_items: "{{ local_users }}"
