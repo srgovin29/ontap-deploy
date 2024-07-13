@@ -3,3 +3,19 @@ login: &login
   username: '{{ deploy_login }}'
   https: true
   validate_certs: false
+
+user_password: "{{ ontap_user_password }}"
+
+local_users:
+  - username: "Srini"
+    vserver: "uknase24a"
+    applications: "ssh, http"
+    role: "StorageAdmin"
+  - username: "karthik"
+    vserver: "uknase24a"
+    applications: "ssh"
+    role: "StorageAdmin"
+  - username: "paulson"
+    vserver: "uknase24a"
+    applications: "ssh, http, console"
+    role: "StorageAdmin"

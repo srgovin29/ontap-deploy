@@ -1,3 +1,5 @@
+# roles/02.local_users/tasks/main.yml
+
 - name: Configure roles and web access
   na_ontap_user:
     state: present
@@ -7,6 +9,7 @@
     https: "{{ login.https }}"
     validate_certs: "{{ login.validate_certs }}"
     name: "{{ item.username }}"
+    role_name: '{{ item.role }}'
     vserver: "{{ item.vserver }}"
     applications: '{{ item.applications | regex_replace("\s*,\s*,",",") }}'
     authentication_method: password

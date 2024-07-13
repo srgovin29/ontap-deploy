@@ -41,3 +41,13 @@
   roles:
     - 01.configure_roles
   tags: configure_roles
+
+- name: Creating local users for cluster management
+  hosts: localhost
+  connection: local
+  var_files:
+    - group_vars/vault.yml
+    - group_vars/ots_cluster.yml
+  roles:
+    - 02.local_users
+  tags: user_creation
