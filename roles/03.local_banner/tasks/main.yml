@@ -1,3 +1,5 @@
+# roles/03.local_banner/tasks/main.yml
+
 - name: Set cluster-level banner (ONTAP API)
   uri:
     url: "https://{{ cluster_ip }}/api/security/login/messages?scope=cluster"

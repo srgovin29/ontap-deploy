@@ -1,3 +1,15 @@
+# Variables for setting cluster-level banner in ONTAP
+
+# The IP address of the ONTAP cluster
+# cluster_ip: "192.168.1.100"  # Replace with the actual cluster IP
+
+# Login credentials for the ONTAP cluster
+# deploy_login: "admin"
+# ontap_pwd: "password"  # Replace with the actual password
+
+# The banner message to set at the cluster level
+banner: "This is the test cluster banner message."
+
 login: &login
   hostname: '{{ cluster_ip }}'
   username: '{{ deploy_login }}'
