@@ -1,0 +1,11 @@
+- name: Configure roles and web access
+  na_ontap_command:
+    hostname: "{{ login.hostname }}"
+    username: "{{ login.username }}"
+    password: "{{ ontap_pwd }}"
+    https: "{{ login.https }}"
+    validate_certs: "{{ login.validate_certs }}"
+    command: ['system', 'timeout', 'modify', '-timeout', '{{ ssh_timeout | int }}']
+    privilege: 'admin'
+  register: result
+  failed_when: result.msg | regex_search("Error")

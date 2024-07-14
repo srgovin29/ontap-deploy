@@ -1,0 +1,11 @@
+login: &login
+  hostname: '{{ cluster_ip }}'
+  username: '{{ deploy_login }}'
+  https: true
+  validate_certs: false
+
+# Password for the ONTAP cluster
+ontap_pwd: ""  # Replace with the actual password
+
+# SSH timeout value
+ssh_timeout: 600  # Adjust the timeout value as needed

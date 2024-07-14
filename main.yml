@@ -61,3 +61,13 @@
   roles:
     - 03.local_banner
   tags: banner_creation
+
+- name: ssh_timeout
+  hosts: localhost
+  connection: local
+  var_files:
+    - group_vars/vault.yml
+    - group_vars/ots_cluster.yml
+  roles:
+    - 04.ssh_timeout
+  tags: ssh_timeout
