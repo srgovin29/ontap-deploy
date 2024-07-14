@@ -51,3 +51,13 @@
   roles:
     - 02.local_users
   tags: user_creation
+
+- name: Creating login banner
+  hosts: localhost
+  connection: local
+  var_files:
+    - group_vars/vault.yml
+    - group_vars/ots_cluster.yml
+  roles:
+    - 03.local_banner
+  tags: banner_creation

@@ -1,0 +1,5 @@
+login: &login
+  hostname: '{{ cluster_ip }}'
+  username: '{{ deploy_login }}'
+  https: true
+  validate_certs: false

@@ -1,0 +1,13 @@
+- name: Set cluster-level banner (ONTAP API)
+  uri:
+    url: "https://{{ cluster_ip }}/api/security/login/messages?scope=cluster"
+    user: "{{ deploy_login }}"
+    password: "{{ ontap_pwd }}"
+    validate_certs: false
+    method: PATCH
+    headers:
+      Content-Type: application/json
+      Accept: application/hal+json
+    body_format: json
+    body: "{ \"banner\": \"{{ banner }}\" }"
+    status_code: 200
