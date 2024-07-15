@@ -1,0 +1,30 @@
+# Login credentials for the ONTAP cluster
+login: &login
+  hostname: '{{ cluster_ip }}'
+  username: '{{ deploy_login }}'
+  https: true
+  validate_certs: false
+
+
+# NDMP configuration details
+ndmp:
+  - vserver: "vserver1"
+    enable: "true"
+    preferred_interface_role:
+      - "node_mgmt"
+    authtype: 
+      - "plaintext"
+    is_secure_control_connection_enabled: "true"
+    ndmp_user: "ndmpuser1"  # Add the NDMP user for this vserver
+  - vserver: "vserver2"
+    enable: "true"
+    preferred_interface_role:
+      - "node_mgmt"
+    authtype: 
+      - "plaintext"
+    is_secure_control_connection_enabled: "true"
+    ndmp_user: "ndmpuser2"  # Add the NDMP user for this vserver
+
+# Directory to store generated passwords
+private_data_dir: "/tmp"  # Replace with the actual directory path
+

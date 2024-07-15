@@ -11,12 +11,12 @@
   roles:
     - prepare_vmware
   tags: prepare_vmware
-  var_files:
+  vars_files:
     - group_vars/vault.yml
 
 - name: Deploy ONTAP Select
   hosts: localhost
-  var_files:
+  vars_files:
     - group_vars/ots_deploy.yml
     - group_vars/vault.yml
   roles:
@@ -25,7 +25,7 @@
 
 - name: Deploy ONTAP Select Cluster
   hosts: localhost
-  var_files:
+  vars_files:
     - group_vars/ots_cluster.yml
     - group_vars/vault.yml
   roles:
@@ -35,7 +35,7 @@
 - name: Configure Custom Roles and web access
   hosts: localhost
   connection: local
-  var_files:
+  vars_files:
     - group_vars/vault.yml
     - group_vars/ots_cluster.yml
   roles:
@@ -45,7 +45,7 @@
 - name: Creating local users for cluster management
   hosts: localhost
   connection: local
-  var_files:
+  vars_files:
     - group_vars/vault.yml
     - group_vars/ots_cluster.yml
   roles:
@@ -55,7 +55,7 @@
 - name: Creating login banner
   hosts: localhost
   connection: local
-  var_files:
+  vars_files:
     - group_vars/vault.yml
     - group_vars/ots_cluster.yml
   roles:
@@ -65,9 +65,28 @@
 - name: ssh_timeout
   hosts: localhost
   connection: local
-  var_files:
+  vars_files:
     - group_vars/vault.yml
     - group_vars/ots_cluster.yml
   roles:
     - 04.ssh_timeout
   tags: ssh_timeout
+
+- name: configure_NDMP
+  hosts: localhost
+  connection: local
+  vars_files:
+    - group_vars/vault.yml
+    - group_vars/ots_cluster.yml
+  roles:
+    - 05.configure_ndmp
+  tags: configure_ndmp
+
+- name: Diable_HTTP
+  hosts: localhost
+  connection: local
+  vars_files:
+    - group_vars/vault.yml
+    - group_vars/ots_cluster.yml
+  tags: disable_http
+  

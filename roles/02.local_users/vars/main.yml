@@ -15,7 +15,7 @@ local_users:
     vserver: "uknase24a"
     applications: "ssh"
     role: "StorageAdmin"
-  - username: "paulson"
+  - username: "ndmpuser1"
     vserver: "uknase24a"
     applications: "ssh, http, console"
-    role: "StorageAdmin"
+    role: "backup" #backup role is configured for NDMP. so this is must

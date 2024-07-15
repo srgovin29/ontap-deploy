@@ -1,0 +1,58 @@
+# roles/05.configure_ndmp/tasks/main.yml
+
+- name: Disable node-scope NDMP (na_ontap_command)
+  na_ontap_command:
+    command: ['system', 'services', 'ndmp', 'node-scope-mode', 'off']
+    privilege: admin
+    #<<: *login
+    hostname: "{{ login.hostname }}"
+    username: "{{ login.username }}"
+    password: "{{ ontap_pwd }}"
+    https: "{{ login.https }}"
+    validate_certs: "{{ login.validate_certs }}"
+  register: result
+  failed_when: result.msg | regex_search("Error")
+
+- name: Configure SVM-Scope NDMP
+  uri:
+    url: "https://{{ cluster_ip }}/api/private/cli/vserver/services/ndmp?vserver={{ item.vserver }}"
+    user: "{{ deploy_login }}"
+    password: "{{ ontap_pwd }}"
+    validate_certs: false 
+    method: PATCH
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    body_format: json
+    body:
+      enable: '{{ item.enable }}'
+      preferred_interface_role: '{{ item.preferred_interface_role }}'
+      authtype: '{{ item.authtype }}'
+      is_secure_control_connection_enabled: '{{ item.is_secure_control_connection_enabled }}'
+    status_code: 200
+  loop: '{{ ndmp }}'
+
+- name: Generate NDMP password
+  uri:
+    url: "https://{{ cluster_ip }}/api/private/cli/vserver/services/ndmp/generate-password?vserver= {{ item.vserver  }}&user={{ item.ndmp_user }}&fields=password"
+    user: '{{ deploy_login }}'
+    password: '{{ ontap_pwd }}'
+    validate_certs: false
+    method: GET
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    status_code: 200
+  when: item.enable and item.authtype != "plaintext_sso"
+  loop: "{{ ndmp }}"
+  register: result
+  failed_when: result.json.num_records != 1
+
+- debug: 
+    var: result
+    verbosity: 3
+
+- name: store password to a file
+  copy:
+    content: "{{ result.results.0.json.records.0 }}"
+    dest: "{{ private_data_dir }}/output/{{ vserver }}_ndmp_credential.txt"

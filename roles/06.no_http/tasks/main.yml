@@ -1,0 +1,14 @@
+# roles/06.no_http/tasks/main.yml
+
+- name: Disable HTTP (na_ontap_command)
+  na_ontap_command:
+    command: ['system', 'services', 'web', 'modify', '-http-enabled', 'false']
+    privilege: 'advanced'
+    #<<: *login
+    hostname: "{{ login.hostname }}"
+    username: "{{ login.username }}"
+    password: "{{ ontap_pwd }}"
+    https: "{{ login.https }}"
+    validate_certs: "{{ login.validate_certs }}"
+  register: result
+  failed_when: result.msg | regex_search("Error")
